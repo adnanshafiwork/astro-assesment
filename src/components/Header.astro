@@ -1,0 +1,32 @@
+---
+import { getUser } from '../utils/auth';
+
+let user = null;
+
+try {
+  user = await getUser(Astro.request);
+} catch (error) {
+  console.error('Error fetching user:', error);
+}
+---
+<header class="bg-blue-600 text-white">
+  <nav class="container mx-auto flex justify-between items-center p-4">
+    <a href="/" class="text-xl font-bold">Your App Name</a>
+    <ul class="flex space-x-4 items-center">
+      <li><a href="/" class="hover:text-gray-200">Home</a></li>
+      <li><a href="/products" class="hover:text-gray-200">Products</a></li>
+      <li><a href="/cart" class="hover:text-gray-200">Cart</a></li>
+      {user ? (
+        <>
+          <li class="text-gray-200">Welcome, {user.username}</li>
+          <li><a href="/logout" class="hover:text-gray-200">Logout</a></li>
+        </>
+      ) : (
+        <>
+          <li><a href="/login" class="hover:text-gray-200">Login</a></li>
+          <li><a href="/register" class="hover:text-gray-200">Register</a></li>
+        </>
+      )}
+    </ul>
+  </nav>
+</header>

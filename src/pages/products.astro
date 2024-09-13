@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductsPage from '../components/ProductsPage.jsx';
+---
+
+<BaseLayout title="Products">
+  <ProductsPage client:only="react" />
+</BaseLayout>

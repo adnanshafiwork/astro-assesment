@@ -1,0 +1,12 @@
+---
+import { onMount } from 'solid-js';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+onMount(async () => {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/';
+});
+---
+<BaseLayout title="Logout">
+  <p>Logging out...</p>
+</BaseLayout>

@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.jsx';
+
+let products = [];
+
+try {
+  const response = await fetch('http://127.0.0.1:1337/api/products'); 
+  const data = await response.json();
+  products = data.data;
+} catch (error) {
+  console.error('Error fetching products:', error);
+}
+---
+
+<BaseLayout title="Home">
+  <h1 class="text-3xl font-bold mb-6">Welcome to Our Store</h1>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {products.map(product => (
+      <ProductCard product={product} />
+    ))}
+  </div>
+</BaseLayout>

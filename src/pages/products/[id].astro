@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { createSignal } from 'solid-js';
+
+const { id } = Astro.params;
+let product = null;
+const [alertMessage, setAlertMessage] = createSignal('');
+const [alertType, setAlertType] = createSignal('');
+
+try {
+  const response = await fetch(`/api/product/${id}`);
+  product = await response.json();
+} catch (error) {
+  console.error('Error fetching product:', error);
+}
+
+async function handleAddToCart(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = Object.fromEntries(formData);
+  data.productId = product.id;
+
+  try {
+    const response = await fetch('/api/add-to-cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      setAlertType('success');
+      setAlertMessage('Item added to cart.');
+    } else {
+      const errorData = await response.json();
+      setAlertType('error');
+      setAlertMessage(errorData.error.message || 'Failed to add to cart.');
+    }
+  } catch (error) {
+    setAlertType('error');
+    setAlertMessage('An error occurred. Please try again.');
+  }
+}
+---
+
+<BaseLayout title={product ? product.name : 'Product'}>
+  {product ? (
+    <>
+      <h1 class="text-3xl font-bold mb-4">{product.name}</h1>
+      <img src="{product.image}" alt="{product.name}" class="w-full h-64 object-cover mb-4">
+      <p class="mb-4">{product.description}</p>
+      
+      {alertMessage() && (
+        <div class={`mb-4 p-4 rounded ${alertType() === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {alertMessage()}
+        </div>
+      )}
+      
+      <form on:submit={handleAddToCart} class="flex items-center space-x-4">
+        <label class="block">
+          Quantity:
+          <input type="number" name="quantity" value="1" min="1" required class="w-20 p-2 border rounded mt-1" />
+        </label>
+        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+          Add to Cart
+        </button>
+      </form>
+    </>
+  ) : (
+    <p>Loading...</p>
+  )}
+</BaseLayout>
